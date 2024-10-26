@@ -12,7 +12,7 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
 
   useEffect(() => {
     // Initialize the WebSocket connection to the Flask server
-    socketRef.current = io('http://localhost:5000');
+    socketRef.current = io('http://localhost:4000');
 
     socketRef.current.on('connect', () => {
       console.log('Connected to Flask server');

@@ -13,6 +13,8 @@ dist-ssr
 *.local
 bun.lockb
 .env
+__pycache__
+.python-version
 
 # Editor directories and files
 .vscode/*
