@@ -10,21 +10,21 @@
     background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
     display: flex;
     align-items: center; /* Center the modal vertically */
-    justify-content: center; /* Center the modal horizontally */
-    z-index: 1000; /* Ensure the modal appears above other content */
+    justify-content: center;
+    z-index: 1000;
 }
   
 /* Modal Container */
 .modal-container {
-    background: white; /* White background for modal */
-    padding: 2rem; /* Padding inside the modal */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow */
-    max-width: 520px; /* Max width of modal (30% wider than 400px) */
-    width: 90%; /* Responsive width */
-    text-align: center; /* Center text inside modal */
-    overflow-y: auto; /* Enable vertical scrolling */
-    max-height: 80vh; /* Limit height to 80% of the viewport height */
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 520px;
+    width: 90%;
+    text-align: center;
+    overflow-y: auto;
+    max-height: 80vh;
 }
   
 /* Close Button */
