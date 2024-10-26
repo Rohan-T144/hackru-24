@@ -3,7 +3,7 @@ from pymongo import ObjectId
 import gridfs
 
 class DataBaseClient():
-    def __init__(name, connect_nw = 'localhost', connect_port = 27017):
+    def __init__(self, name, connect_nw = 'localhost', connect_port = 27017):
         self.name = name
         self.client = MongoClient(connect_nw, connect_port)
         self.db = self.client[f"{self.name}"]
@@ -32,15 +32,15 @@ class DataBaseClient():
         if not audio_id and not audio_data: 
             print('No data to fetch')
             return False
-        else if audio_id: audio_data = self.fs.get(ObjectId(audio_id))
+        elif audio_id: audio_data = self.fs.get(ObjectId(audio_id))
         return audio_data.read()
 
     def read(self, audio_data : str = None, audio_id : str = None):
         if not audio_data and not audio_id: 
             print('No data to fetch')
             return False
-        else if audio_data:
+        elif audio_data:
             document = self.collection.find_one({"audio_data": audio_data})
-        else if audio_id:
+        elif audio_id:
             document = self.collection.find_one({"_id": ObjectId(audio_id)})
         return document
