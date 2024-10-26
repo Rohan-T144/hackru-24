@@ -10,9 +10,10 @@ class DataBaseClient():
         self.collection = self.db[f'{self.name}']
         self.fs = gridfs.GridFS(self.db)
 
-    def write(self, date : str, audio_data : str, transcription : str, score : int, advice : str) -> bool:
+    def write(self, date : str, project : str, audio_data : str, transcription : str, score : int, advice : str) -> bool:
         document = {
             "date": date,
+            "project": str
             "audio_data": audio_data,        
             "transcription": transcription,
             "score": score,
