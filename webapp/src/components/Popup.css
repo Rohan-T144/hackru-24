@@ -1,0 +1,61 @@
+/* src/components/Popup.css */
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed; /* Fullscreen overlay */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    display: flex;
+    align-items: center; /* Center the modal vertically */
+    justify-content: center; /* Center the modal horizontally */
+    z-index: 1000; /* Ensure the modal appears above other content */
+}
+  
+/* Modal Container */
+.modal-container {
+    background: white; /* White background for modal */
+    padding: 2rem; /* Padding inside the modal */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    max-width: 520px; /* Max width of modal (30% wider than 400px) */
+    width: 90%; /* Responsive width */
+    text-align: center; /* Center text inside modal */
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 80vh; /* Limit height to 80% of the viewport height */
+}
+  
+/* Close Button */
+.close-button {
+    background: none; /* No background */
+    border: none; /* No border */
+    color: #333; /* Color of close button */
+    font-size: 1.2rem; /* Size of the close button */
+    cursor: pointer; /* Pointer cursor */
+    position: absolute; /* Positioned relative to modal */
+    top: 10px; /* Positioning from the top */
+    right: 10px; /* Positioning from the right */
+}
+  
+/* Heading Class */
+.modal-heading {
+    font-size: 1.5rem; /* Font size for headings */
+    color: #111; /* Dark color for headings */
+    margin-bottom: 0.5rem; /* Space below headings */
+}
+  
+/* Subheading Class */
+.modal-subheading {
+    font-size: 1.2rem; /* Font size for subheadings */
+    color: #111; /* Slightly lighter color for subheadings */
+    margin-top: 1rem; /* Space above subheadings */
+}
+  
+/* Paragraph Class */
+.modal-paragraph {
+    font-size: 1rem; /* Font size for paragraphs */
+    color: #111; /* Dark gray for paragraph text */
+    margin: 1rem 0; /* Vertical space for paragraphs */
+}
