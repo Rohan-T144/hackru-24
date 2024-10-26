@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+// import reactLogo from './assets/react.svg'
+// import viteLogo from '/vite.svg'
 import './App.css'
 import Recorder from './components/Recorder';
 import Transcription from './components/Transcription';
@@ -24,14 +24,14 @@ function App() {
       {/* <h1>Vite + React</h1> */}
       <div className="app-container">
         <h1>Speakalytic</h1>
-        <Recorder setTranscription={setTranscription} />
+        <Recorder setTranscription={setTranscription} transcription={transcription} />
         <Transcription text={transcription} />
         {transcription && <Feedback transcription={transcription} />}
       </div>
       <div className="card">
-        {/* <button onClick={() => setCount((count) => count + 1)}>
+        <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
-        </button> */}
+        </button>
         {/* <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p> */}
