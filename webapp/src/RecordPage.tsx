@@ -10,12 +10,16 @@ import Feedback from './components/Feedback';
 
 function RecordPage() {
 	// const [count, setCount] = useState(0);
-	const [transcription, setTranscription] = useState<string>('');
+	const [transcription, setTranscription] = useState('');
+
+	const updateTranscription = (next: string) => {
+		setTranscription(transcription + ' ' + next);
+	}
 
 	return (
 		<div className="app-container">
 			<h1>Speakalytic</h1>
-			<Recorder setTranscription={setTranscription} transcription={transcription} />
+			<Recorder setTranscription={updateTranscription} transcription={transcription} />
 			{/* <Recorder /> */}
 			<Transcription text={transcription} />
 			{transcription && <Feedback transcription={transcription} />}
