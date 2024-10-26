@@ -7,12 +7,29 @@ import os
 import sys
 import json
 from groq_evaluation import evaluate_speech_with_groq
+from deepgram.utils import verboselogs
+
+from deepgram_tr import make_deepgram
+
+from deepgram import (
+    DeepgramClient,
+    DeepgramClientOptions,
+    LiveTranscriptionEvents,
+    LiveOptions,
+    Microphone,
+)
 
 app = Flask(__name__)
 
+
+dg_connection = None
 # from flask import Flask, request
 
-app = Flask(__name__)
+# otherwise, use default config
+deepgram: DeepgramClient = DeepgramClient(os.getenv("DEEPGRAM_API_KEY"))
+
+
+
 app.config['SECRET_KEY'] = os.urandom(24)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -20,24 +37,43 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 def index():
     return "Flask server is running."
 
+@socketio.on('start_audio')
+def handle_start_audio():
+    print("Start audio event received.")
+    global dg_connection
+    if not dg_connection:
+        dg_connection = make_deepgram()
+
 @socketio.on('audio_data')
 def handle_audio_data(data):
+    print("Received audio data:", type(data), len(data))
+    global dg_connection
+    if not dg_connection:
+        dg_connection = make_deepgram()
+    dg_connection.send(data)
+
     # Here, `data` contains the raw audio chunks sent from the frontend
-    print("Received audio data:", data)
+    # print("Received audio data:", data)
     # print(data)
     # Optionally, process or save the audio data
     # You could save it to a file, pass it to an ML model, etc.
+
+@socketio.on('stop_audio')
+def handle_stop_audio():    
+    global dg_connection
+    print("Stop audio event received.")
+    if dg_connection:
+        dg_connection.close()
 
 @socketio.on('connect')
 def handle_connect():
     print("Client connected.")
 
+
+
 @socketio.on('disconnect')
 def handle_disconnect():
     print("Client disconnected.")
-
-if __name__ == '__main__':
-    socketio.run(app, host="0.0.0.0", port=4000)
 
 @app.route('/evaluate', methods=['POST'])
 def evaluate_speech():
@@ -65,7 +101,10 @@ if __name__ == '__main__':
     else:
         speech_text = "I am uhm, practicing, uhm, my speaking skills. How am I, uh, I guess, how am I, uh, doing?"
 
+    socketio.run(app, host="0.0.0.0", port=4000)
+
+    # app.run(debug=True, host='0.0.0.0', port=4000)
     # Create a test client to run the evaluation
-    with app.test_client() as client:
-        response = client.post('/evaluate', json={"speech_text": speech_text})
-        print("\nResponse JSON:", json.loads(response.data))
+    # with app.test_client() as client:
+    #     response = client.post('/evaluate', json={"speech_text": speech_text})
+    #     print("\nResponse JSON:", json.loads(response.data))
