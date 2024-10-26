@@ -70,7 +70,7 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
       <button onClick={isRecording ? stopRecording : startRecording}>
         {isRecording ? 'Stop Recording' : 'Start Recording'}
       </button>
-      {/* <p>Transcription: {transcription}</p> */}
+      <h3>Transcription: {transcription}</h3>
     </div>
   );
 };
