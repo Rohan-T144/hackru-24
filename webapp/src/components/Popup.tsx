@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+// src/components/Popup.tsx
+
+import React from 'react';
+import './Popup.css';
 
 interface PopupProps {
   score: number;
@@ -9,17 +11,15 @@ interface PopupProps {
 
 const Popup: React.FC<PopupProps> = ({ score, content, onClose }) => {
   return (
-    <div className="popup-overlay">
-      <div className="popup">
-        <div className="popup-score">
-          <h2>Score</h2>
-          <p>{score}</p>
-        </div>
-        <div className="popup-content">
-          <h2>Content</h2>
-          <p>{content}</p>
-        </div>
-        <button onClick={onClose}>Close</button>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+        <button className="close-button" onClick={onClose}>
+          &times; {/* Close icon */}
+        </button>
+        <h2 className="modal-heading">Your Score</h2>
+        <p className="modal-paragraph">{score}</p>
+        <h3 className="modal-subheading">Feedback</h3>
+        <p className="modal-paragraph">{content}</p>
       </div>
     </div>
   );
