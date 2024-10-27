@@ -24,14 +24,13 @@ This project is an audio recording application that allows users to sign up, log
   - Deepgram API for audio transcription
 
 - **Backend:**
-  - Node.js (if applicable)
-  - Express.js (if applicable)
-  - Custom API for user management (if applicable)
+  - Flask for backend server
+  - MongoDB for storing user data
 
 ## Installation
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
-   cd your-repo-name
+   git clone https://github.com/Rohan-T144/hackru-24.git
+   cd hackru-24
    ```
