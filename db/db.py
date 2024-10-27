@@ -5,17 +5,19 @@ from datetime import datetime
 import librosa
 
 class DataBaseClient():
-    def __init__(self, name, connect_nw = 'localhost', connect_port = 27017):
-        self.name = name
+    def __init__(self, connect_nw = 'localhost', connect_port = 27017):
+        self.name = 'hackru-2024'
         self.client = MongoClient(connect_nw, connect_port)
         self.db = self.client[f"{self.name}"]
         self.collection = self.db[f'{self.name}']
         self.fs = gridfs.GridFS(self.db)
 
-    def write(self, project: str, audio_name: str, transcription: str, score: int, advice: str, audio_data=None, date: str = datetime.today().date().strftime("%Y-%m-%d")) -> bool:
+    def write(self, user_id : str, project: str, audio_id, audio_name: str, transcription: str, score: int, advice: str, audio_data=None, date: str = datetime.today().date().strftime("%Y-%m-%d")) -> bool:
         if not audio_data:
             document = {
+                "user_id": user_id,
                 "date": date,
+                "audio_id": audio_id,
                 "project": project,
                 "audio_name": audio_name,        
                 "transcription": transcription,
@@ -26,8 +28,10 @@ class DataBaseClient():
         else:
             result = self.write_audio_to_gridfs(audio_data)
             document = {
+                "user_id": user_id
                 "date": date,
                 "project": project,
+                "audio_id": audio_id,
                 "audio_name": audio_name,        
                 "transcription": transcription,
                 "score": score,
@@ -65,6 +69,9 @@ class DataBaseClient():
         elif audio_id:
             document = self.collection.find_one({"_id": ObjectId(audio_id)})
         return document
+
+    def get_collection(self):
+        return self.collection
     
 # if __name__ == "__main__":
 #     client = DataBaseClient('test')
