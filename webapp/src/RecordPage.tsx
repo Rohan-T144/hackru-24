@@ -33,10 +33,12 @@ function RecordPage() {
 
   return (
     <div className="app-container">
-      <h1>Speakalytic</h1>
+      <h1>Speakalytics</h1>
       <Recorder setTranscription={setTranscription} transcription={transcription} />
       {buttonVisible && (
-        <button onClick={receiveInput}>Submit</button>
+        <div className="button-container"> {/* Added a wrapper for the button */}
+          <button onClick={receiveInput}>Submit</button>
+        </div>
       )}
       {isPopupVisible && (
         <Popup 

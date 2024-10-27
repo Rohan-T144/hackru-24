@@ -72,7 +72,7 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
         await live.current?.send(event.data);
       }
     });
-    mediaRecorder.start(250);
+    mediaRecorder.start(50);
     recorderRef.current = { stream, recorder: mediaRecorder };
   };
 
@@ -98,7 +98,7 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
         {isRecording ? 'Stop Recording' : 'Start Recording'}
       </button>
       <h3>Transcription:</h3>
-      <div>{highlightFillerWords(transcription)}</div>
+      <div className="transcription-text">{highlightFillerWords(transcription)}</div>
     </div>
   );
 };
