@@ -1,43 +1,15 @@
-# server/app.py
-
 from flask import Flask, request, jsonify
-from flask_socketio import SocketIO, emit
-import os
 
 import sys
-import json
 from groq_evaluation import evaluate_speech_with_groq
 
 app = Flask(__name__)
-
-# from flask import Flask, request
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(24)
-socketio = SocketIO(app, cors_allowed_origins="*")
+# app.config['SECRET_KEY'] = os.urandom(24)
 
 @app.route('/')
 def index():
     return "Flask server is running."
 
-@socketio.on('audio_data')
-def handle_audio_data(data):
-    # Here, `data` contains the raw audio chunks sent from the frontend
-    print("Received audio data:", data)
-    # print(data)
-    # Optionally, process or save the audio data
-    # You could save it to a file, pass it to an ML model, etc.
-
-@socketio.on('connect')
-def handle_connect():
-    print("Client connected.")
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    print("Client disconnected.")
-
-if __name__ == '__main__':
-    socketio.run(app, host="0.0.0.0", port=4000)
 
 @app.route('/evaluate', methods=['POST'])
 def evaluate_speech():
@@ -65,7 +37,5 @@ if __name__ == '__main__':
     else:
         speech_text = "I am uhm, practicing, uhm, my speaking skills. How am I, uh, I guess, how am I, uh, doing?"
 
-    # Create a test client to run the evaluation
-    with app.test_client() as client:
-        response = client.post('/evaluate', json={"speech_text": speech_text})
-        print("\nResponse JSON:", json.loads(response.data))
+    app.run(debug=True, host='0.0.0.0', port=4000)
+
