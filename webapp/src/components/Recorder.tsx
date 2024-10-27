@@ -1,47 +1,49 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createClient, ListenLiveClient, LiveTranscriptionEvents } from "@deepgram/sdk";
 
-
-
 interface RecorderProps {
   transcription: string;
-  // setTranscription: (transcription: string) => void;
-  setTranscription: any;
+  setTranscription: (transcription: string) => void;
 }
 
 const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
-  const [count, setCount] = useState<number>(0);
+  const [transcriptions, setTranscriptions] = useState<string[]>([]);
   const live = useRef<ListenLiveClient | null>(null);
+  const isListenerSet = useRef(false); // Track if listeners have been set
 
   useEffect(() => {
     const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
 
-    live.current = deepgram.listen.live({ model: "nova-2" });
-    live.current?.on(LiveTranscriptionEvents.Open, () => {
-      live.current?.on(LiveTranscriptionEvents.Transcript, (data) => {
-        console.log(data.channel.alternatives[0].transcript);
+    // Enable punctuation with 'punctuate: true'
+    live.current = deepgram.listen.live({ model: "nova-2", punctuate: true });
 
-        // console.log(data);
-        // if (data.isFinal) {
-        // setTranscription(transcription + ' ' + data.channel.alternatives[0].transcript);
-        if (count % 2 == 0) {
-          console.log(`count: ${count}`)
-          setTranscription((old: string) => old + ' ' + data.channel.alternatives[0].transcript);
-        }
-        setCount((count) => {
-          console.log(`updating count: ${count}`)
-          return count + 1;
+    // Set listeners only once
+    if (!isListenerSet.current && live.current) {
+      isListenerSet.current = true; // Prevent further listener attachment
+      live.current.on(LiveTranscriptionEvents.Open, () => {
+        live.current?.on(LiveTranscriptionEvents.Transcript, (data) => {
+          const newTranscript = data.channel.alternatives[0].transcript;
+          console.log(newTranscript);
+
+          // Update the transcriptions array and display the full text
+          setTranscriptions((prevTranscriptions) => {
+            if (!prevTranscriptions.includes(newTranscript)) {
+              const updatedTranscriptions = [...prevTranscriptions, newTranscript];
+              setTranscription(updatedTranscriptions.join(' '));
+              return updatedTranscriptions;
+            }
+            return prevTranscriptions;
+          });
+        });
       });
-      });
-    });
+    }
 
     return () => {
       // Cleanup the WebSocket connection when the component is unmounted
-      // socketRef.current?.disconnect();
       live.current?.requestClose();
     };
-  }, []);
+  }, [setTranscription]);
 
   const startRecording = async () => {
     setIsRecording(true);
@@ -49,17 +51,11 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
     console.log(`Created stream ${stream}`);
     const mediaRecorder = new MediaRecorder(stream);
 
-    console.log(`Emitted start_audio`);
-
-    console.log(`Created media recorder ${mediaRecorder}`);
     mediaRecorder.addEventListener('dataavailable', async (event) => {
       if (event.data.size > 0) {
         await live.current?.send(event.data);
-        console.log(`Sending audio data: ${event.data}`);
-
-        // socketRef.current?.emit('audio_data', event.data);
       }
-    })
+    });
     mediaRecorder.start(250);
     recorderRef.current = { stream, recorder: mediaRecorder };
   };
@@ -69,11 +65,11 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
     const { stream, recorder } = recorderRef.current || {};
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
-      recorder?.removeEventListener('dataavailable', async (event) => {})
+      recorder?.removeEventListener('dataavailable', async (event) => {});
     }
     recorder?.stop();
     console.log(`Emitted stop_audio`);
-  }
+  };
 
   const recorderRef = useRef<{ stream: MediaStream, recorder: MediaRecorder } | null>(null);
 
