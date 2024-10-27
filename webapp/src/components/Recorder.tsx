@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createClient, ListenLiveClient, LiveTranscriptionEvents } from "@deepgram/sdk";
 
-
-
 interface RecorderProps {
   transcription: string;
   setTranscription: (transcription: string) => void;
@@ -10,43 +8,57 @@ interface RecorderProps {
 
 const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [transcriptions, setTranscriptions] = useState<string[]>([]);
   const live = useRef<ListenLiveClient | null>(null);
+  const isListenerSet = useRef(false); // Track if listeners have been set
+
+  const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
 
   useEffect(() => {
-    const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
+    // const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
 
-    live.current = deepgram.listen.live({ model: "nova" });
-    live.current?.on(LiveTranscriptionEvents.Open, () => {
-      live.current?.on(LiveTranscriptionEvents.Transcript, (data) => {
-        console.log(data.channel.alternatives[0].transcript);
-        // setTranscription(transcription + ' ' + data.channel.alternatives[0].transcript);
-        setTranscription(transcription + ' ' + data.channel.alternatives[0].transcript);
-      });
-    });
+    // Enable punctuation with 'punctuate: true'
 
     return () => {
       // Cleanup the WebSocket connection when the component is unmounted
-      // socketRef.current?.disconnect();
-      live.current?.requestClose();
     };
-  }, []);
+  }, [setTranscription]);
 
   const startRecording = async () => {
     setIsRecording(true);
+
+    live.current = deepgram.listen.live({ model: "nova-2", punctuate: true, filler_words: true });
+
+    // Set listeners only once
+    if (!isListenerSet.current && live.current) {
+      isListenerSet.current = true; // Prevent further listener attachment
+      live.current.on(LiveTranscriptionEvents.Open, () => {
+        live.current?.on(LiveTranscriptionEvents.Transcript, (data) => {
+          const newTranscript = data.channel.alternatives[0].transcript;
+          console.log(newTranscript);
+
+          // Update the transcriptions array and display the full text
+          setTranscriptions((prevTranscriptions) => {
+            if (!prevTranscriptions.includes(newTranscript)) {
+              const updatedTranscriptions = [...prevTranscriptions, newTranscript];
+              setTranscription(updatedTranscriptions.join(' '));
+              return updatedTranscriptions;
+            }
+            return prevTranscriptions;
+          });
+        });
+      });
+    }
+
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     console.log(`Created stream ${stream}`);
     const mediaRecorder = new MediaRecorder(stream);
 
-    console.log(`Emitted start_audio`);
-
-    console.log(`Created media recorder ${mediaRecorder}`);
     mediaRecorder.addEventListener('dataavailable', async (event) => {
       if (event.data.size > 0) {
-        // console.log(`Sending audio data: ${event.data}`);
         await live.current?.send(event.data);
-        // socketRef.current?.emit('audio_data', event.data);
       }
-    })
+    });
     mediaRecorder.start(250);
     recorderRef.current = { stream, recorder: mediaRecorder };
   };
@@ -56,11 +68,15 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
     const { stream, recorder } = recorderRef.current || {};
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
-      recorder?.removeEventListener('dataavailable', async (event) => {})
+      recorder?.removeEventListener('dataavailable', async (event) => {});
     }
     recorder?.stop();
+    live.current?.removeAllListeners();
+    live.current?.requestClose();
+    isListenerSet.current = false;
+
     console.log(`Emitted stop_audio`);
-  }
+  };
 
   const recorderRef = useRef<{ stream: MediaStream, recorder: MediaRecorder } | null>(null);
 

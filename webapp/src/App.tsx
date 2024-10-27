@@ -8,12 +8,12 @@ import ProjectsPage from './ProjectsPage';
 import RecordPage from './RecordPage';
 import ProjectDetailPage from './ProjectDetailPage';
 import AuthPage from './AuthPage';
-import { AuthProvider } from './AuthContext'; // Import AuthProvider
+import { AuthProvider } from './AuthContext';
 
 function App() {
   return (
     <Theme>
-      <AuthProvider> {/* Wrap the app with AuthProvider */}
+      <AuthProvider>
         <Router>
           <Navbar />
           <div className="App">
