@@ -29,7 +29,10 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
           console.log(`count: ${count}`)
           setTranscription((old: string) => old + ' ' + data.channel.alternatives[0].transcript);
         }
-        setCount(count + 1);
+        setCount((count) => {
+          console.log(`updating count: ${count}`)
+          return count + 1;
+      });
       });
     });
 

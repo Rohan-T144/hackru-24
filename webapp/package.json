@@ -13,6 +13,7 @@
     "@deepgram/sdk": "^3.9.0",
     "@radix-ui/themes": "^3.1.4",
     "deepgram": "^1.0.3",
+    "firebase": "^11.0.1",
     "radix-ui": "^1.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
