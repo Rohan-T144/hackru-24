@@ -66,6 +66,7 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream);
+    // const audioRecorder = new MediaRecorder(stream, { mimeType: 'audio/mp3' }); // Set the MIME type
 
     mediaRecorder.addEventListener('dataavailable', async (event) => {
       if (event.data.size > 0) {
@@ -73,6 +74,8 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
       }
     });
     mediaRecorder.start(50);
+    // audioRecorder.start(50);
+    // audioRef.current = audioRecorder;
     recorderRef.current = { stream, recorder: mediaRecorder };
   };
 
@@ -87,8 +90,10 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
     live.current?.removeAllListeners();
     live.current?.requestClose();
     isListenerSet.current = false;
-  };
 
+    // audioRef.current?.stop();
+  };
+  // const audioRef = useRef<MediaRecorder | null>(null);
   const recorderRef = useRef<{ stream: MediaStream, recorder: MediaRecorder } | null>(null);
 
   return (

@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request
+import io
+from flask import Flask, jsonify, request, send_file
 from pymongo import MongoClient
 from bson import ObjectId
 from flask_cors import CORS
@@ -8,12 +9,15 @@ import sys
 
 sys.path.append('..')
 
-from db.db import DataBaseClient
+from db import DataBaseClient
+
 
 app = Flask(__name__)
 CORS(app)
+
 client = DataBaseClient()
-global NAME = 'hackru-2024'
+global NAME 
+NAME = 'hackru-2024'
 
 # Endpoint to write a document to the user's database
 @app.route('/api/<user_id>/add_document', methods=['POST'])
@@ -110,4 +114,4 @@ def get_project_documents(user_id, project_name):
         return jsonify({"error": "No documents found for this user and project"}), 404
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(port=3000)

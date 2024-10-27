@@ -26,6 +26,23 @@ function RecordPage() {
     }
   };
 
+  const saveRecording = async () => {
+    // Save the transcription to the server
+    // You can use an API call or a database here
+    const user_id = 1;
+    const response = await axios.post(`/api/${user_id}/add_document`, {
+      project: "sample1",
+      user_idn: user_id,
+      audio_name: "sample1",
+      audio_id: 0,
+      transcription: transcription,
+      score: 0,
+      advice: JSON.stringify(feedback),
+      date: new Date().toISOString().slice(0, 10),
+    });
+    console.log(response);
+  };
+
   const closePopup = () => {
     setPopupVisible(false);
     setButtonVisible(true);
@@ -46,6 +63,7 @@ function RecordPage() {
           onClose={closePopup} 
         />
       )}
+      <button onClick={saveRecording}>Save Recording & Feedback</button>
     </div>
   );
 }
