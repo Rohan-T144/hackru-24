@@ -1,8 +1,7 @@
-// src/AuthPage.tsx
 import React, { useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 import axios from 'axios';
 
@@ -15,7 +14,6 @@ const firebaseConfig = {
   appId: "1:178565103196:web:0f99e989b67e65aebcf099"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
@@ -24,26 +22,29 @@ const AuthPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-
-  const navigate = useNavigate(); // Initialize useNavigate for redirection
+  
+  const navigate = useNavigate(); // Hook to navigate programmatically
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null); 
-  
+
     try {
       if (isSignup) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
+
         await axios.post('/api/create_user', { user_id: userId });
-  
+
+        // Immediately log in the user after signup
+        await signInWithEmailAndPassword(auth, email, password);
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      // Redirect to RecordPage after successful login or signup
+
       navigate('/recordpage');
     } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      navigate('/recordpage');
     }
   };
 
@@ -57,6 +58,7 @@ const AuthPage: React.FC = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="auth-input"
+          required
         />
         <input
           type="password"
@@ -64,15 +66,13 @@ const AuthPage: React.FC = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="auth-input"
+          required
         />
         <button type="submit" className="auth-button">
           {isSignup ? 'Sign Up' : 'Log In'}
         </button>
       </form>
-      
-      {/* Display an error message if there is one */}
       {error && <p className="auth-error">{error}</p>}
-
       <p className="auth-toggle">
         {isSignup ? 'Already have an account?' : 'Don’t have an account?'}
         <button
