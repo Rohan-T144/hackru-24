@@ -70,6 +70,15 @@ class DataBaseClient():
             document = self.collection.find_one({"_id": ObjectId(audio_id)})
         return document
 
+    def read_project(self, project_name, user_id):
+        if user_id not in self.client.get_collection.distinct('user_idn'): 
+            return False
+        else if project_name not in self.client.get_collection.distinct('project'):
+            return False
+        query = {'user_id': user_id, 'project': project_name}
+        documents = list(self.client.get_collection.find(query))
+        return documents
+
     def get_collection(self):
         return self.collection
     

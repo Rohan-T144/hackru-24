@@ -100,5 +100,14 @@ def get_audio(user_id, audio_id):
             "error": f"Error retrieving audio: {str(e)}"
         }), 500
 
+@app.route('/api/<user_id>/get_project_documents/<project_name>', methods=['GET'])
+def get_project_documents(user_id, project_name):
+    documents = client.read_project(project_name, user_id)
+    
+    if documents:
+        return jsonify(documents), 200
+    else:
+        return jsonify({"error": "No documents found for this user and project"}), 404
+
 if __name__ == '__main__':
     app.run(port=5000)
