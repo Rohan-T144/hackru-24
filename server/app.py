@@ -3,20 +3,27 @@ from flask import Flask, request, jsonify
 import sys
 from groq_evaluation import evaluate_speech_with_groq
 from flask_cors import CORS
+# from db import DataBaseClient
 
-from ..db.db import DataBaseClient
+# from db import DataBaseClient
 
 app = Flask(__name__)
 
 CORS(app, origins="http://localhost:5173")
 
-db_client = DataBaseClient('mongodb://127.0.0.1:27017')
+# db_client = DataBaseClient('mongodb://127.0.0.1:27017')
 
 # app.config['SECRET_KEY'] = os.urandom(24)
 
 @app.route('/')
 def index():
     return "Flask server is running."
+
+
+# @app.route('/projects', methods=['GET'])
+# def get_projects():
+#     projects = db_client.get_projects()
+#     return jsonify(projects)
 
 
 @app.route('/evaluate', methods=['POST'])
