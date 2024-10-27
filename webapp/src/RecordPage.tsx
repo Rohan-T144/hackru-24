@@ -19,8 +19,8 @@ function RecordPage() {
 
       // Update feedback state
       setFeedback(newFeedback);
-      setPopupVisible(true); // Show the popup
-      setButtonVisible(false); // Hide button after clicking
+      setPopupVisible(true);
+      setButtonVisible(false);
     } catch (error) {
       console.error('There was an error!', error);
     }
@@ -28,7 +28,7 @@ function RecordPage() {
 
   const closePopup = () => {
     setPopupVisible(false);
-    setButtonVisible(true); // Show button again when popup closes
+    setButtonVisible(true);
   };
 
   return (
@@ -40,7 +40,7 @@ function RecordPage() {
       )}
       {isPopupVisible && (
         <Popup 
-          feedback={feedback} // Pass feedback to Popup
+          feedback={feedback}
           onClose={closePopup} 
         />
       )}

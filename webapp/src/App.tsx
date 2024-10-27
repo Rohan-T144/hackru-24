@@ -27,7 +27,6 @@ function MainContent() {
 
   return (
     <div className="App">
-      {/* Conditionally render the Navbar */}
       {location.pathname !== '/' && <Navbar />}
       
       <Routes>
