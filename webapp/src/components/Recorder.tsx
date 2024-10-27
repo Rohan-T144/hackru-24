@@ -13,10 +13,9 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
   const live = useRef<ListenLiveClient | null>(null);
   const isListenerSet = useRef(false); // Track if listeners have been set
 
-  const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
+  const deepgram = createClient(`${import.meta.env.VITE_DEEPGRAM_API_KEY}`);
 
   useEffect(() => {
-    // const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
 
     // Enable punctuation with 'punctuate: true'
 

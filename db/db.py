@@ -74,6 +74,6 @@ class DataBaseClient():
         return self.collection
     
 # if __name__ == "__main__":
-#     client = DataBaseClient('test')
+    # client = DataBaseClient('mongodb://127.0.0.1:27017')
 #     client.write('test', 'sample1', 'this is a test', 9, 'be better', '/Users/aravdhoot/Downloads/sample1.mp3')
 #     # print(client.read_audio_from_gridfs('671d509b848f147a7a2de3f4'))
