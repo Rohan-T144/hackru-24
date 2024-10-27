@@ -1,33 +1,31 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+// src/authService.ts
 import { auth } from "./firebaseConfig";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
-// Sign up with email and password
-export const signUp = async (email, password) => {
+export const signUp = async (email: string, password: string) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     return userCredential.user;
   } catch (error) {
-    console.error("Error during signup:", error.message);
+    console.error("Signup error:", error);
     throw error;
   }
 };
 
-// Log in with email and password
-export const logIn = async (email, password) => {
+export const logIn = async (email: string, password: string) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;
   } catch (error) {
-    console.error("Error during login:", error.message);
+    console.error("Login error:", error);
     throw error;
   }
 };
 
-// Log out
 export const logOut = async () => {
   try {
     await signOut(auth);
   } catch (error) {
-    console.error("Error during logout:", error.message);
+    console.error("Logout error:", error);
   }
 };
