@@ -1,3 +1,4 @@
+// Recorder.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { createClient, ListenLiveClient, LiveTranscriptionEvents } from "@deepgram/sdk";
 import { FaMicrophone } from 'react-icons/fa'; // Import the microphone icon
@@ -5,9 +6,10 @@ import { FaMicrophone } from 'react-icons/fa'; // Import the microphone icon
 interface RecorderProps {
   transcription: string;
   setTranscription: (transcription: string) => void;
+  selectedLanguage: string; // Add selectedLanguage prop
 }
 
-const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) => {
+const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription, selectedLanguage = 'en-US' }) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [transcriptions, setTranscriptions] = useState<string[]>([]);
   const [volume, setVolume] = useState<number>(0); // State to hold volume level
@@ -16,12 +18,12 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const dataArrayRef = useRef<Uint8Array | null>(null);
-  const recorderRef = useRef<{ stream: MediaStream, recorder: MediaRecorder } | null>(null);
+  const recorderRef = useRef<{ stream: MediaStream; recorder: MediaRecorder } | null>(null);
 
   const deepgram = createClient(`${import.meta.env.VITE_DEEPGRAM_API_KEY}`);
 
   // List of filler words
-  const fillerWords = ["um", "ah", "uh", "like", "you know", "so", "actually"];
+  const fillerWords = ["um", "ah", "uh", "like", "you know", "actually"];
 
   // Function to highlight filler words
   const highlightFillerWords = (text: string) => {
@@ -51,95 +53,79 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
   const startRecording = async () => {
     setIsRecording(true);
 
-    live.current = deepgram.listen.live({ model: "nova-2", punctuate: true, filler_words: true });
+    try {
+      // Start Deepgram live listening with the selected language
+      live.current = deepgram.listen.live({
+        model: "nova-2",
+        punctuate: true,
+        filler_words: true,
+        language: selectedLanguage, // Use the selected language for transcription
+      });
 
-    if (!isListenerSet.current && live.current) {
-      isListenerSet.current = true;
-      live.current.on(LiveTranscriptionEvents.Open, () => {
-        live.current?.on(LiveTranscriptionEvents.Transcript, (data) => {
-          const newTranscript = data.channel.alternatives[0].transcript;
+      if (!isListenerSet.current && live.current) {
+        isListenerSet.current = true;
+        live.current.on(LiveTranscriptionEvents.Open, () => {
+          live.current?.on(LiveTranscriptionEvents.Transcript, (data) => {
+            const newTranscript = data.channel.alternatives[0].transcript;
 
-          // Update transcriptions and highlight filler words
-          setTranscriptions((prevTranscriptions) => {
-            if (!prevTranscriptions.includes(newTranscript)) {
-              const updatedTranscriptions = [...prevTranscriptions, newTranscript];
-              const highlightedTranscription = updatedTranscriptions.join(' ');
-              setTranscription(highlightedTranscription);
-              return updatedTranscriptions;
-            }
-            return prevTranscriptions;
+            // Update transcriptions and highlight filler words
+            setTranscriptions((prevTranscriptions) => {
+              if (!prevTranscriptions.includes(newTranscript)) {
+                const updatedTranscriptions = [...prevTranscriptions, newTranscript];
+                const highlightedTranscription = updatedTranscriptions.join(' ');
+                setTranscription(highlightedTranscription);
+                return updatedTranscriptions;
+              }
+              return prevTranscriptions;
+            });
           });
         });
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+
+      mediaRecorder.addEventListener('dataavailable', async (event) => {
+        if (event.data.size > 0) {
+          await live.current?.send(event.data);
+        }
       });
+
+      // Create audio context and analyser
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      const source = audioContextRef.current.createMediaStreamSource(stream);
+      source.connect(analyserRef.current);
+      analyserRef.current.fftSize = 2048;
+
+      dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
+
+      const updateVolume = () => {
+        if (dataArrayRef.current) {
+          analyserRef.current?.getByteFrequencyData(dataArrayRef.current);
+          const sum = dataArrayRef.current.reduce((acc, val) => acc + val, 0);
+          const avg = sum / dataArrayRef.current.length; // Average byte value (0-255)
+
+          // Calculate decibels based on average value
+          const decibels = avg > 0 ? Math.log10(avg) * 20 : -Infinity; // Convert to decibels
+          const minDecibel = -50;
+          const maxDecibel = -20;
+
+          // Normalize the decibel to a scale of 0 (minDecibel) to 1 (maxDecibel)
+          const normalizedVolume = (decibels - minDecibel) / (maxDecibel - minDecibel);
+          const clampedVolume = Math.min(Math.max(normalizedVolume, 0), 1);
+          setVolume(clampedVolume); // Ensure we don't exceed 1
+        }
+        requestAnimationFrame(updateVolume);
+      };
+
+      mediaRecorder.start(50);
+      recorderRef.current = { stream, recorder: mediaRecorder };
+      updateVolume(); // Start volume update for size animation
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      setIsRecording(false); // Reset recording state on error
     }
-
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
-    // const audioRecorder = new MediaRecorder(stream, { mimeType: 'audio/mp3' }); // Set the MIME type
-
-    mediaRecorder.addEventListener('dataavailable', async (event) => {
-      if (event.data.size > 0) {
-        await live.current?.send(event.data);
-      }
-    });
-
-    // Create audio context and analyser
-    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-    analyserRef.current = audioContextRef.current.createAnalyser();
-    const source = audioContextRef.current.createMediaStreamSource(stream);
-    source.connect(analyserRef.current);
-    analyserRef.current.fftSize = 2048;
-
-    dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
-
-    const updateVolume = () => {
-      if (dataArrayRef.current) {
-        analyserRef.current?.getByteFrequencyData(dataArrayRef.current);
-        const sum = dataArrayRef.current.reduce((acc, val) => acc + val, 0);
-        const avg = sum / dataArrayRef.current.length; // Average byte value (0-255)
-
-        // Calculate decibels based on average value
-        const decibels = avg > 0 ? Math.log10(avg) * 20 : -Infinity; // Convert to decibels
-        // console.log(`Average Byte Value: ${avg.toFixed(2)}, Decibels: ${decibels.toFixed(2)}`);
-
-        // Normalize decibel values to a range of 0 to 1 based on the specified range of -50 to -20
-        const minDecibel = -50;
-        const maxDecibel = -20;
-
-        // Normalize the decibel to a scale of 0 (minDecibel) to 1 (maxDecibel)
-        const normalizedVolume = (decibels - minDecibel) / (maxDecibel - minDecibel);
-        // Clamp the value to be between 0 and 1
-        const clampedVolume = Math.min(Math.max(normalizedVolume, 0), 1);
-
-        // Log the normalized volume
-        // console.log(`Normalized Volume: ${clampedVolume.toFixed(2)}`);
-
-        // Generate a sine wave for modulation
-        const sineWave = Math.sin(Date.now() * 0.02) * 0.5 + 0.5; // Sine wave from 0 to 1
-
-        // Combine normalized volume and sine wave for a smoother effect
-        const animatedVolume = clampedVolume + (clampedVolume * sineWave * 0.5); // Adding modulation without limiting max volume
-        setVolume(Math.min(animatedVolume, 1)); // Ensure we don't exceed 1
-      }
-      requestAnimationFrame(updateVolume);
-    };
-
-    // Throttle the updates
-    let lastUpdate = Date.now();
-    const throttledUpdateVolume = () => {
-      if (Date.now() - lastUpdate > 100) { // Update every 100ms
-        updateVolume();
-        lastUpdate = Date.now();
-      }
-      requestAnimationFrame(throttledUpdateVolume);
-    };
-
-    requestAnimationFrame(throttledUpdateVolume);
-
-    mediaRecorder.start(50);
-    // audioRecorder.start(50);
-    // audioRef.current = audioRecorder;
-    recorderRef.current = { stream, recorder: mediaRecorder };
   };
 
   const stopRecording = () => {
@@ -161,7 +147,6 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
 
   return (
     <div>
-      <h1>Live Audio Stream</h1>
       <div
         style={{
           width: `${dynamicSize}px`,
@@ -171,9 +156,9 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          transition: 'width 0.2s ease, height 0.2s ease', // Smooth transition
-          margin: '20px auto', // Center the circle
-          cursor: 'pointer', // Change cursor to pointer
+          transition: 'width 0.2s ease, height 0.2s ease',
+          margin: '20px auto',
+          cursor: 'pointer',
         }}
         onClick={isRecording ? stopRecording : startRecording}
       >

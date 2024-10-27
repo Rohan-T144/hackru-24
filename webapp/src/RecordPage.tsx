@@ -7,17 +7,24 @@ import axios from 'axios';
 function RecordPage() {
   const [transcription, setTranscription] = useState<string>('');
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const [feedback, setFeedback] = useState<any[]>([]); // Store feedback as an array
+  const [feedback, setFeedback] = useState<any[]>([]); 
   const [buttonVisible, setButtonVisible] = useState(true);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('en-US');
+
+  const languages = [
+    { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
+    { code: 'es-ES', name: 'Spanish (Spain)', flag: '🇪🇸' },
+    { code: 'fr-FR', name: 'French', flag: '🇫🇷' },
+    { code: 'de-DE', name: 'German', flag: '🇩🇪' },
+    { code: 'it-IT', name: 'Italian', flag: '🇮🇹' },
+  ];
 
   const receiveInput = async () => {
     const data = { speech_text: transcription };
 
     try {
       const response = await axios.post('http://localhost:4000/evaluate', data);
-      const newFeedback = response.data; // Assuming the response is already in the right format
-
-      // Update feedback state
+      const newFeedback = response.data;
       setFeedback(newFeedback);
       setPopupVisible(true);
       setButtonVisible(false);
@@ -29,8 +36,6 @@ function RecordPage() {
   };
 
   const saveRecording = async () => {
-    // Save the transcription to the server
-    // You can use an API call or a database here
     const user_id = 1;
     const response = await axios.post(`http://localhost:3000/api/${user_id}/add_document`, {
       project: "sample1",
@@ -52,20 +57,48 @@ function RecordPage() {
 
   return (
     <div className="app-container">
-      <h1>Speakalytics</h1>
-      <Recorder setTranscription={setTranscription} transcription={transcription} />
-      {buttonVisible && (
-        <div className="button-container"> {/* Added a wrapper for the button */}
-          <button onClick={receiveInput}>Submit</button>
+      <div className="content-wrapper">
+        <h1 className="app-title">Speakalytics</h1>
+
+        <div className="language-select-container">
+          <label htmlFor="languageSelect" className="select-label">
+            <h4>Select Language for Transcription:</h4>
+          </label>
+          <select
+            id="languageSelect"
+            className="language-select"
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+          >
+            {languages.map((language) => (
+              <option key={language.code} value={language.code}>
+                {language.flag} {language.name}
+              </option>
+            ))}
+          </select>
         </div>
-      )}
-      {isPopupVisible && (
-        <Popup 
-          feedback={feedback}
-          onClose={closePopup} 
+
+        <Recorder 
+          setTranscription={setTranscription} 
+          transcription={transcription} 
+          selectedLanguage={selectedLanguage}
         />
-      )}
-      {/* <button onClick={saveRecording}>Save Recording & Feedback</button> */}
+
+        {buttonVisible && (
+          <div className="button-container">
+            <button className="submit-button" onClick={receiveInput}>
+              Submit
+            </button>
+          </div>
+        )}
+        
+        {isPopupVisible && (
+          <Popup 
+            feedback={feedback}
+            onClose={closePopup} 
+          />
+        )}
+      </div>
     </div>
   );
 }
