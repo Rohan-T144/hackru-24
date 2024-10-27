@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Recorder from './components/Recorder';
-import Feedback from './components/Feedback';
+// import Feedback from './components/Feedback';
 import Popup from './components/Popup';
 
 function RecordPage() {
@@ -35,7 +35,7 @@ function RecordPage() {
     <div className="app-container">
       <h1>Speakalytic</h1>
       <Recorder setTranscription={setTranscription} transcription={transcription} />
-      {transcription && <Feedback transcription={transcription} />}
+      {/* {transcription && <Feedback transcription={transcription} />} */}
       {buttonVisible && (
         <button onClick={receiveInput}>Show Score</button>
       )}

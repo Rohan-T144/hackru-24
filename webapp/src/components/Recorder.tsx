@@ -12,11 +12,22 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
   const live = useRef<ListenLiveClient | null>(null);
   const isListenerSet = useRef(false); // Track if listeners have been set
 
+  const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
+
   useEffect(() => {
-    const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
+    // const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
 
     // Enable punctuation with 'punctuate: true'
-    live.current = deepgram.listen.live({ model: "nova-2", punctuate: true });
+
+    return () => {
+      // Cleanup the WebSocket connection when the component is unmounted
+    };
+  }, [setTranscription]);
+
+  const startRecording = async () => {
+    setIsRecording(true);
+
+    live.current = deepgram.listen.live({ model: "nova-2", punctuate: true, filler_words: true });
 
     // Set listeners only once
     if (!isListenerSet.current && live.current) {
@@ -39,14 +50,6 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
       });
     }
 
-    return () => {
-      // Cleanup the WebSocket connection when the component is unmounted
-      live.current?.requestClose();
-    };
-  }, [setTranscription]);
-
-  const startRecording = async () => {
-    setIsRecording(true);
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     console.log(`Created stream ${stream}`);
     const mediaRecorder = new MediaRecorder(stream);
@@ -68,6 +71,10 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
       recorder?.removeEventListener('dataavailable', async (event) => {});
     }
     recorder?.stop();
+    live.current?.removeAllListeners();
+    live.current?.requestClose();
+    isListenerSet.current = false;
+
     console.log(`Emitted stop_audio`);
   };
 
