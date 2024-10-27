@@ -28,7 +28,7 @@ class DataBaseClient():
         else:
             result = self.write_audio_to_gridfs(audio_data)
             document = {
-                "user_id": user_id
+                "user_id": user_id,
                 "date": date,
                 "project": project,
                 "audio_id": audio_id,
