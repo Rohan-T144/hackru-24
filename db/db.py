@@ -12,11 +12,12 @@ class DataBaseClient():
         self.collection = self.db[f'{self.name}']
         self.fs = gridfs.GridFS(self.db)
 
-    def write(self, user_id : str, project: str, audio_name: str, transcription: str, score: int, advice: str, audio_data=None, date: str = datetime.today().date().strftime("%Y-%m-%d")) -> bool:
+    def write(self, user_id : str, project: str, audio_id, audio_name: str, transcription: str, score: int, advice: str, audio_data=None, date: str = datetime.today().date().strftime("%Y-%m-%d")) -> bool:
         if not audio_data:
             document = {
                 "user_id": user_id,
                 "date": date,
+                "audio_id": audio_id,
                 "project": project,
                 "audio_name": audio_name,        
                 "transcription": transcription,
@@ -30,6 +31,7 @@ class DataBaseClient():
                 "user_id": user_id
                 "date": date,
                 "project": project,
+                "audio_id": audio_id,
                 "audio_name": audio_name,        
                 "transcription": transcription,
                 "score": score,

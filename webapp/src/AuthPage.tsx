@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import './Auth.css';
+import axios from 'axios';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDzfaK4J73AhvEzBs2ZaUAien6jLVqtoxM",
@@ -23,13 +24,31 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  // const handleAuth = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setError(null); // Clear any existing error
+
+  //   try {
+  //     if (isSignup) {
+  //       await createUserWithEmailAndPassword(auth, email, password);
+  //     } else {
+  //       await signInWithEmailAndPassword(auth, email, password);
+  //     }
+  //   } catch (err) {
+  //     setError('Invalid email or password. Please try again.');
+  //   }
+  // };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); // Clear any existing error
-
+    setError(null); 
+  
     try {
       if (isSignup) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userId = userCredential.user.uid;
+        await axios.post('/api/create_user', { user_id: userId });
+  
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
@@ -79,3 +98,5 @@ const AuthPage: React.FC = () => {
 };
 
 export default AuthPage;
+
+// TODO: create db

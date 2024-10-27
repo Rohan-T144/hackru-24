@@ -22,6 +22,7 @@ def add_document(user_id):
     project = data.get('project')
     user_idn = data.get('user_idn')
     audio_name = data.get('audio_name')
+    audio_id = data.get('audio_id')
     transcription = data.get('transcription')
     score = data.get('score')
     advice = data.get('advice')
