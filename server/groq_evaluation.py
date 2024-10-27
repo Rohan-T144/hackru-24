@@ -11,7 +11,9 @@ def evaluate_speech_with_groq(content):
     """
     schema = json.dumps([
         {"aspect": "clarity", "score": "integer", "advice": "string"},
-        {"aspect": "conciseness", "score": "integer", "advice": "string"}
+        {"aspect": "conciseness", "score": "integer", "advice": "string"},
+        {"aspect": "confidence", "score": "integer", "advice": "string"},
+        {"aspect": "emotional reach", "score": "integer", "advice": "string"}
     ], indent=2)
     
     response = groq.chat.completions.create(
@@ -19,8 +21,19 @@ def evaluate_speech_with_groq(content):
         messages=[
             {
                 'role': 'system',
-                'content': 'Analyze the provided public speaking content and rate it on clarity and conciseness. '
-                           f'Return a JSON array matching this schema: {schema}. Only return the JSON object.'
+                'content': (
+                    "Analyze the provided public speaking content to evaluate four critical aspects: "
+                    "clarity, conciseness, confidence, and emotional reach. "
+                    "For each aspect, provide a score from 1 to 10 and specific advice for improvement. "
+                    "Return a JSON array that matches this schema:\n\n"
+                    f"{schema}\n\n"
+                    "Definitions:\n"
+                    "- Clarity: How understandable the speech is; evaluate word choice and structure.\n"
+                    "- Conciseness: How effectively the speaker conveys ideas without unnecessary filler or repetition.\n"
+                    "- Confidence: Reflects the speaker's assertiveness and conviction; analyze word choice and tone.\n"
+                    "- Emotional Reach: Assess how well the speech connects emotionally with the audience; evaluate language that inspires, persuades, or empathizes.\n\n"
+                    "Return only the JSON array as output."
+                )
             },
             {
                 'role': 'user',

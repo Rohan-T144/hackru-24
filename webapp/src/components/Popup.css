@@ -20,8 +20,8 @@
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 520px;
-    width: 90%;
+    max-width: 676px; /* 30% wider than the previous max-width of 520px */
+    width: 90%; /* Ensure it still takes up 90% of the viewport on smaller screens */
     text-align: center;
     overflow-y: auto;
     max-height: 80vh;
@@ -58,4 +58,9 @@
     font-size: 1rem; /* Font size for paragraphs */
     color: #111; /* Dark gray for paragraph text */
     margin: 1rem 0; /* Vertical space for paragraphs */
+}
+
+/* Feedback Item */
+.feedback-item {
+    margin: 1rem 0; /* Space between feedback items */
 }
