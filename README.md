@@ -34,3 +34,4 @@ This project is an audio recording application that allows users to sign up, log
    ```bash
    git clone https://github.com/yourusername/your-repo-name.git
    cd your-repo-name
+   ```
