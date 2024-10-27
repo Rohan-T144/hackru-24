@@ -13,6 +13,8 @@ const ProjectsPage: React.FC = () => {
     { id: '2', title: 'Project 2', score: 92 },
   ];
 
+  
+
   return (
     <div className="projects-page">
       <h1>Projects</h1>

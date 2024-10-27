@@ -4,10 +4,14 @@ import sys
 from groq_evaluation import evaluate_speech_with_groq
 from flask_cors import CORS
 
+from ..db.db import DataBaseClient
 
 app = Flask(__name__)
 
 CORS(app, origins="http://localhost:5173")
+
+db_client = DataBaseClient('mongodb://127.0.0.1:27017')
+
 # app.config['SECRET_KEY'] = os.urandom(24)
 
 @app.route('/')

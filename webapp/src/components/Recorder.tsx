@@ -12,7 +12,7 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
   const live = useRef<ListenLiveClient | null>(null);
   const isListenerSet = useRef(false);
 
-  const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
+  const deepgram = createClient(`${import.meta.env.VITE_DEEPGRAM_API_KEY}`);
 
   // List of filler words
   const fillerWords = ["um", "ah", "uh", "like", "you know", "so", "actually"];
