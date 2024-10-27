@@ -2,8 +2,12 @@ from flask import Flask, request, jsonify
 
 import sys
 from groq_evaluation import evaluate_speech_with_groq
+from flask_cors import CORS
+
 
 app = Flask(__name__)
+
+CORS(app, origins="http://localhost:5173")
 # app.config['SECRET_KEY'] = os.urandom(24)
 
 @app.route('/')

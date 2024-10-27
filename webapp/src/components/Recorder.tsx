@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createClient, ListenLiveClient, LiveTranscriptionEvents } from "@deepgram/sdk";
 
+
 interface RecorderProps {
   transcription: string;
   setTranscription: (transcription: string) => void;
