@@ -1,3 +1,4 @@
+// src/components/Navbar.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
@@ -12,13 +13,12 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <div className="navbar__logo">
-        <Link to="/">Speakalytics</Link>
+        <Link to="/recordpage">Speakalytics</Link>
       </div>
       <div className={`navbar__links ${isMobileNavOpen ? 'open' : ''}`}>
-        <Link to="/">Home</Link>
+        <Link to="/recordpage">Home</Link>
         <Link to="/projects">Projects</Link>
-        {/* <Link to="/about">About</Link>
-        <Link to="/contact">Contact</Link> */}
+        <Link to="/">Sign Up / Log In</Link>
       </div>
       <button className="navbar__toggle" onClick={toggleMobileNav}>
         ☰
