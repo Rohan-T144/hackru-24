@@ -70,10 +70,19 @@ class DataBaseClient():
             document = self.collection.find_one({"_id": ObjectId(audio_id)})
         return document
 
+    def read_project(self, project_name, user_id):
+        if user_id not in self.client.get_collection.distinct('user_idn'): 
+            return False
+        else if project_name not in self.client.get_collection.distinct('project'):
+            return False
+        query = {'user_id': user_id, 'project': project_name}
+        documents = list(self.client.get_collection.find(query))
+        return documents
+
     def get_collection(self):
         return self.collection
     
 # if __name__ == "__main__":
-#     client = DataBaseClient('test')
+    # client = DataBaseClient('mongodb://127.0.0.1:27017')
 #     client.write('test', 'sample1', 'this is a test', 9, 'be better', '/Users/aravdhoot/Downloads/sample1.mp3')
 #     # print(client.read_audio_from_gridfs('671d509b848f147a7a2de3f4'))
