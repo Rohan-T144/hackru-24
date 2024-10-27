@@ -100,7 +100,7 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
 
         // Calculate decibels based on average value
         const decibels = avg > 0 ? Math.log10(avg) * 20 : -Infinity; // Convert to decibels
-        console.log(`Average Byte Value: ${avg.toFixed(2)}, Decibels: ${decibels.toFixed(2)}`);
+        // console.log(`Average Byte Value: ${avg.toFixed(2)}, Decibels: ${decibels.toFixed(2)}`);
 
         // Normalize decibel values to a range of 0 to 1 based on the specified range of -50 to -20
         const minDecibel = -50;
@@ -112,7 +112,7 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
         const clampedVolume = Math.min(Math.max(normalizedVolume, 0), 1);
 
         // Log the normalized volume
-        console.log(`Normalized Volume: ${clampedVolume.toFixed(2)}`);
+        // console.log(`Normalized Volume: ${clampedVolume.toFixed(2)}`);
 
         // Generate a sine wave for modulation
         const sineWave = Math.sin(Date.now() * 0.02) * 0.5 + 0.5; // Sine wave from 0 to 1

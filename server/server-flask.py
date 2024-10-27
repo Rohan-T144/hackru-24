@@ -31,7 +31,8 @@ def add_document(user_id):
     score = data.get('score')
     advice = data.get('advice')
     date = data.get('date', datetime.today().date().strftime("%Y-%m-%d"))
-    audio_data = request.files['audio_data'].read() if 'audio_data' in request.files else None
+    audio_data = None
+    # audio_data = request.files['audio_data'].read() if 'audio_data' in request.files else None
 
     doc_id = client.write(user_idn, project, audio_name, transcription, score, advice, audio_data, date)
     

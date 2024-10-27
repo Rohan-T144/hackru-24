@@ -60,10 +60,13 @@ class DataBaseClient:
 
     def write_audio_to_gridfs(self, audio_data, filename="audio_file.mp3"):
         try:
-            audio_id = self.fs.put(audio_data, filename=filename)
+            # audio_id = self.fs.put(audio_data, filename=filename)
+            audio_id = '123'
+            # pass
         except:
-            with open(audio_data, "rb") as audio_file:
-                audio_id = self.fs.put(audio_file, filename=filename)
+            audio_id = '123'
+            # with open(audio_data, "rb") as audio_file:
+            #     audio_id = self.fs.put(audio_file, filename=filename)
         return str(audio_id)
 
     def read_audio_from_gridfs(self, audio_id=None):

@@ -24,13 +24,15 @@ function RecordPage() {
     } catch (error) {
       console.error('There was an error!', error);
     }
+
+    saveRecording();
   };
 
   const saveRecording = async () => {
     // Save the transcription to the server
     // You can use an API call or a database here
     const user_id = 1;
-    const response = await axios.post(`/api/${user_id}/add_document`, {
+    const response = await axios.post(`http://localhost:3000/api/${user_id}/add_document`, {
       project: "sample1",
       user_idn: user_id,
       audio_name: "sample1",
