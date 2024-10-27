@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createClient, ListenLiveClient, LiveTranscriptionEvents } from "@deepgram/sdk";
 
-
 interface RecorderProps {
   transcription: string;
   setTranscription: (transcription: string) => void;
@@ -11,16 +10,32 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [transcriptions, setTranscriptions] = useState<string[]>([]);
   const live = useRef<ListenLiveClient | null>(null);
-  const isListenerSet = useRef(false); // Track if listeners have been set
+  const isListenerSet = useRef(false);
 
   const deepgram = createClient(`${import.meta.env.VITE_DEEPGRAM_API_KEY}`);
 
+  // List of filler words
+  const fillerWords = ["um", "ah", "uh", "like", "you know", "so", "actually"];
+
+  // Function to highlight filler words
+  const highlightFillerWords = (text: string) => {
+    return text.split(' ').map((word, index) => {
+      const cleanedWord = word.toLowerCase().replace(/[.,!?]/g, ''); // Remove punctuation
+      const isFillerWord = fillerWords.includes(cleanedWord);
+      return (
+        <span
+          key={index}
+          className={isFillerWord ? 'filler-word' : ''}
+        >
+          {word}{' '}
+        </span>
+      );
+    });
+  };
+
   useEffect(() => {
-
-    // Enable punctuation with 'punctuate: true'
-
     return () => {
-      // Cleanup the WebSocket connection when the component is unmounted
+      // Cleanup the WebSocket connection
     };
   }, [setTranscription]);
 
@@ -29,19 +44,18 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
 
     live.current = deepgram.listen.live({ model: "nova-2", punctuate: true, filler_words: true });
 
-    // Set listeners only once
     if (!isListenerSet.current && live.current) {
-      isListenerSet.current = true; // Prevent further listener attachment
+      isListenerSet.current = true;
       live.current.on(LiveTranscriptionEvents.Open, () => {
         live.current?.on(LiveTranscriptionEvents.Transcript, (data) => {
           const newTranscript = data.channel.alternatives[0].transcript;
-          console.log(newTranscript);
 
-          // Update the transcriptions array and display the full text
+          // Update transcriptions and highlight filler words
           setTranscriptions((prevTranscriptions) => {
             if (!prevTranscriptions.includes(newTranscript)) {
               const updatedTranscriptions = [...prevTranscriptions, newTranscript];
-              setTranscription(updatedTranscriptions.join(' '));
+              const highlightedTranscription = updatedTranscriptions.join(' ');
+              setTranscription(highlightedTranscription);
               return updatedTranscriptions;
             }
             return prevTranscriptions;
@@ -51,7 +65,6 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
     }
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    console.log(`Created stream ${stream}`);
     const mediaRecorder = new MediaRecorder(stream);
 
     mediaRecorder.addEventListener('dataavailable', async (event) => {
@@ -68,14 +81,12 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
     const { stream, recorder } = recorderRef.current || {};
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
-      recorder?.removeEventListener('dataavailable', async (event) => {});
+      recorder?.removeEventListener('dataavailable', async () => {});
     }
     recorder?.stop();
     live.current?.removeAllListeners();
     live.current?.requestClose();
     isListenerSet.current = false;
-
-    console.log(`Emitted stop_audio`);
   };
 
   const recorderRef = useRef<{ stream: MediaStream, recorder: MediaRecorder } | null>(null);
@@ -86,7 +97,8 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
       <button onClick={isRecording ? stopRecording : startRecording}>
         {isRecording ? 'Stop Recording' : 'Start Recording'}
       </button>
-      <h3>Transcription: {transcription}</h3>
+      <h3>Transcription:</h3>
+      <div>{highlightFillerWords(transcription)}</div>
     </div>
   );
 };

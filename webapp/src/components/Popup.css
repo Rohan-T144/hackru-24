@@ -1,15 +1,13 @@
-/* src/components/Popup.css */
-
 /* Modal Overlay */
 .modal-overlay {
-    position: fixed; /* Fullscreen overlay */
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
-    align-items: center; /* Center the modal vertically */
+    align-items: center;
     justify-content: center;
     z-index: 1000;
 }
@@ -20,7 +18,7 @@
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 520px;
+    max-width: 650px;
     width: 90%;
     text-align: center;
     overflow-y: auto;
@@ -29,33 +27,38 @@
   
 /* Close Button */
 .close-button {
-    background: none; /* No background */
-    border: none; /* No border */
-    color: #333; /* Color of close button */
-    font-size: 1.2rem; /* Size of the close button */
-    cursor: pointer; /* Pointer cursor */
-    position: absolute; /* Positioned relative to modal */
-    top: 10px; /* Positioning from the top */
-    right: 10px; /* Positioning from the right */
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
   
 /* Heading Class */
 .modal-heading {
-    font-size: 1.5rem; /* Font size for headings */
-    color: #111; /* Dark color for headings */
-    margin-bottom: 0.5rem; /* Space below headings */
+    font-size: 1.5rem;
+    color: #111;
+    margin-bottom: 0.5rem;
 }
   
 /* Subheading Class */
 .modal-subheading {
-    font-size: 1.2rem; /* Font size for subheadings */
-    color: #111; /* Slightly lighter color for subheadings */
-    margin-top: 1rem; /* Space above subheadings */
+    font-size: 1.2rem;
+    color: #111;
+    margin-top: 1rem;
 }
   
 /* Paragraph Class */
 .modal-paragraph {
-    font-size: 1rem; /* Font size for paragraphs */
-    color: #111; /* Dark gray for paragraph text */
-    margin: 1rem 0; /* Vertical space for paragraphs */
+    font-size: 1rem;
+    color: #111;
+    margin: 1rem 0;
+}
+
+/* Feedback Item */
+.feedback-item {
+    margin: 1rem 0;
 }

@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
       <div className={`navbar__links ${isMobileNavOpen ? 'open' : ''}`}>
         <Link to="/recordpage">Home</Link>
         <Link to="/projects">Projects</Link>
-        <Link to="/">Sign Up / Log In</Link>
+        <Link to="/">Log Out</Link>
       </div>
       <button className="navbar__toggle" onClick={toggleMobileNav}>
         ☰

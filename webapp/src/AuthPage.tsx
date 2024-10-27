@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 import './Auth.css';
 import axios from 'axios';
 
@@ -14,7 +15,7 @@ const firebaseConfig = {
   appId: "1:178565103196:web:0f99e989b67e65aebcf099"
 };
 
-// Initialize Firebase in AuthPage.tsx if not already initialized
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
@@ -24,20 +25,7 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  // const handleAuth = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setError(null); // Clear any existing error
-
-  //   try {
-  //     if (isSignup) {
-  //       await createUserWithEmailAndPassword(auth, email, password);
-  //     } else {
-  //       await signInWithEmailAndPassword(auth, email, password);
-  //     }
-  //   } catch (err) {
-  //     setError('Invalid email or password. Please try again.');
-  //   }
-  // };
+  const navigate = useNavigate(); // Initialize useNavigate for redirection
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +40,8 @@ const AuthPage: React.FC = () => {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
+      // Redirect to RecordPage after successful login or signup
+      navigate('/recordpage');
     } catch (err) {
       setError('Invalid email or password. Please try again.');
     }
@@ -98,5 +88,3 @@ const AuthPage: React.FC = () => {
 };
 
 export default AuthPage;
-
-// TODO: create db
