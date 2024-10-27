@@ -5,22 +5,31 @@ import { createClient, ListenLiveClient, LiveTranscriptionEvents } from "@deepgr
 
 interface RecorderProps {
   transcription: string;
-  setTranscription: (transcription: string) => void;
+  // setTranscription: (transcription: string) => void;
+  setTranscription: any;
 }
 
 const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [count, setCount] = useState<number>(0);
   const live = useRef<ListenLiveClient | null>(null);
 
   useEffect(() => {
     const deepgram = createClient("fffae15f27b98f903f76421b234182b4a08f4dc2");
 
-    live.current = deepgram.listen.live({ model: "nova" });
+    live.current = deepgram.listen.live({ model: "nova-2" });
     live.current?.on(LiveTranscriptionEvents.Open, () => {
       live.current?.on(LiveTranscriptionEvents.Transcript, (data) => {
         console.log(data.channel.alternatives[0].transcript);
+
+        // console.log(data);
+        // if (data.isFinal) {
         // setTranscription(transcription + ' ' + data.channel.alternatives[0].transcript);
-        setTranscription(transcription + ' ' + data.channel.alternatives[0].transcript);
+        if (count % 2 == 0) {
+          console.log(`count: ${count}`)
+          setTranscription((old: string) => old + ' ' + data.channel.alternatives[0].transcript);
+        }
+        setCount(count + 1);
       });
     });
 
@@ -42,8 +51,9 @@ const Recorder: React.FC<RecorderProps> = ({ transcription, setTranscription }) 
     console.log(`Created media recorder ${mediaRecorder}`);
     mediaRecorder.addEventListener('dataavailable', async (event) => {
       if (event.data.size > 0) {
-        // console.log(`Sending audio data: ${event.data}`);
         await live.current?.send(event.data);
+        console.log(`Sending audio data: ${event.data}`);
+
         // socketRef.current?.emit('audio_data', event.data);
       }
     })

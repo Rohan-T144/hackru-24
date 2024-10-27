@@ -27,6 +27,10 @@ function RecordPage() {
     setButtonVisible(true); // Show button again when popup closes
   };
 
+	// const updateTranscription = (newTranscription: string) => {
+	// 	setTranscription(transcription + ' ' + newTranscription);
+	// };
+
   return (
     <div className="app-container">
       <h1>Speakalytic</h1>
